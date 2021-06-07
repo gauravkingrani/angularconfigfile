@@ -1,15 +1,31 @@
-# Stage 1
-FROM node:14.16.0-alpine as build-step
-RUN mkdir -p /app
-WORKDIR /app
-COPY package.json /app
-RUN npm install
-RUN npm audit fix
-COPY . /app
-RUN npm run build --prod
-# Stage 2
-FROM nginx:1.17.1-alpine
-COPY --from=build-step /app/dist/e-care/ /usr/share/nginx/html
+# stage1 as builder
+FROM node:14.16.0-alpine as builder
 
-EXPOSE 4200
-CMD npm start
+# copy the package.json to install dependencies
+COPY package.json package-lock.json ./
+
+# Install the dependencies and make the folder
+RUN npm install && mkdir /app-ui && mv ./node_modules ./app-ui
+
+WORKDIR /app-ui
+
+COPY . .
+
+# Build the project and copy the files
+RUN npm run ng build -- --deploy-url=/envapp/ --prod
+
+
+FROM nginx:alpine
+
+#!/bin/sh
+
+
+## Remove default nginx index page
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy from the stahg 1
+COPY --from=builder /app-ui/dist /usr/share/nginx/html
+
+EXPOSE 4200 80
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
