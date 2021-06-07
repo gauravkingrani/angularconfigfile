@@ -10,3 +10,6 @@ RUN npm run build --prod
 # Stage 2
 FROM nginx:1.17.1-alpine
 COPY --from=build-step /app/dist/e-care/ /usr/share/nginx/html
+
+EXPOSE 4200
+CMD npm start
