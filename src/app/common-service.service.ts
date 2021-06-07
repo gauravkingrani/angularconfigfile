@@ -9,7 +9,9 @@ import { AppConfig } from './app.config';
 })
 export class CommonServiceService {
 
-  readonly rootUrl = 'http://localhost:8000';
+//  readonly rootUrl = 'http://localhost:8000';
+  readonly rootUrl = 'http://3.237.70.233:3000';
+
    loggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
    public getLoggedInCountry:BehaviorSubject<any> = new BehaviorSubject<any>('undefined');
    public option1 = new Subject();
